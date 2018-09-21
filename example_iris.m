@@ -20,7 +20,7 @@ Ptest = x(:, ind2);
 Ytest = t(:, ind2);
 lt = floor(Q*0.8); %training set
 lv = ceil(Q*0.2); %validation set
-
+epoch = 100;
 %%
 %Create NN
 
@@ -34,7 +34,7 @@ net = CreateNN([4 5 3]); %alternative: net = CreateNN([1,3,3,1],[0],[],[]);
 % Set maximum number of iterations k_max to 100
 % Set termination condition for Error E_stop to 1e-5
 % The Training will stop after 100 iterations or when the Error <=E_stop
-netLM = train_LM(P,Y,net,100,1e-5);
+netLM = train_LM(P,Y,net,epoch,1e-5);
 %Calculate Output of trained net (LM) for training and Test Data
 y_LM = NNOut(P,netLM); 
 ytest_LM = NNOut(Ptest,netLM); 
