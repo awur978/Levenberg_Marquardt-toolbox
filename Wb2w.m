@@ -1,35 +1,34 @@
-% Eingangs- und Verbindungsmatrizen sowie Biasvektoren für in Net
-% vorgegebene  in Gesamtgewichtsvektor net.w_0 zusammenfassen
+% Input and connection matrices and bias vectors for in Net
+% summarize  given in total weight vector net.w_0
 
 function w=Wb2w(net,IW,LW,b)
 
-dL=net.dL; % Verzögerungen zwischen den Schichten
-dI=net.dI; % Verzögerungen der Eingänge
-I=net.I;      % Eingangsmatrizen (hier nur eine Eingangsmatrix der in Schicht 1 einkoppelt)
-L_f=net.L_f;  % Vorwärtsverbindungen
-M=net.M; % Anzahl der Schicjten des NN
+dL=net.dL; % Delays between layers
+dI=net.dI; % Delays of the inputs
+I=net.I;       % Input matrices (here only one input matrix coupled in layer 1)
+L_f=net.L_f;  % Forward links
+M=net.M; % Number of hits of the NN
 
-w=[]; %Gesamtgewichtsvektor
+w=[];  % Total weight vector
 
-
-for m=1:M  %Alle Schichten m
+for m=1:M  % All layers m
     
-    %Eingangsgewichte
+    % Input weights
     if m==1 
-        for i=I{m}  %Alle Eingangsmatrizen i die in Schicht m einkoppeln
-            for d=dI{m,i}   % alle Verzögerungen i->m
-                w=[w;IW{m,i,d+1}(:)];   %Eingangsgewichtsmatrix zu Gesamtgewichtsvektor hinzufügen [Matix(:) = vec(Matric)]
+        for i=I{m}  % All input matrices i that couple in layer m
+            for d=dI{m,i}   % all delays i-> m
+                w=[w;IW{m,i,d+1}(:)]; % Add input weight matrix to total weight vector [Matix (:) = vec (Matric)]
             end
         end
     end
 
-    %Verbindungsgewichte
-    for l=L_f{m}  %Alle Schichten l die eine direkte Vrwärtsverbindung zu Schicht m ahben
-        for d=dL{m,l}    % alle Verzögerungen l->m
-            w=[w;LW{m,l,d+1}(:)]; %Verbindungsgewichtsmatrix zu Gesamtgewichtsvektor hinzufügen  [Matix(:) = vec(Matric)]
+    % Connection weights
+    for l=L_f{m} % All layers that have a direct forward link to the layer
+        for d=dL{m,l}    % all delays l-> m
+            w=[w;LW{m,l,d+1}(:)]; %Add connection weight matrix to total weight vector [Matix (:) = vec (Matric)]
         end
     end
     
-    %Biasgewichte
-    w=[w;b{m}];     %Biasvektor von Schicht m zum Gesamtgewichtsvektor hunzufügen
+    %Bias weights
+    w=[w;b{m}];     %Add bias vector from layer m to the total weight vector
 end

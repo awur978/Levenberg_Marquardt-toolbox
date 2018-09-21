@@ -20,7 +20,7 @@ Ptest = x(:, ind2);
 Ytest = t(:, ind2);
 lt = floor(Q*0.8); %training set
 lv = ceil(Q*0.2); %validation set
-epoch = 1000;
+epoch = 10;
 
 %%
 %Create NN
