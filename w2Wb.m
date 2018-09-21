@@ -1,49 +1,48 @@
-% Umwandeln des Gesamtgewichtsvektors w in die Eingangsgewichtsmatrizen IW,
-% die Verbindungsgewichtsmatrizen LW und die Biasvektoren b
-
+% Conversion of the total weight vector w into the input weight matrices IW,
+% the connection weight matrices LW and the bias vectors b
 
 function [IW,LW,b]=w2Wb(net)
 
-I=net.I;                %Eingänge in die Schichten
-dI=net.dI;              %Verzögerung der Eingänge
-L_f=net.L_f;            %Vorwärtsverbindungen der Schichten
-dL=net.dL;              %Verzögerung zwischen den Schichten
-inputs=net.nn(1); %Anzahl der Eingänge
-layers=net.layers;            %Aufbau des Netzes
-w_temp=net.w;         %temporärer Gesamtgewichtsvektor
-M=net.M;                %Anzahl der Schichten des NN
+I=net.I;                % Inputs into the layers
+dI=net.dI;              % Delay of the inputs
+L_f=net.L_f;           % Forward connections of the layers
+dL=net.dL;              % Delay between layers
+inputs=net.nn(1); % Number of inputs
+layers=net.layers;            % Structure of the network
+w_temp=net.w;         % temporary total weight vector
+M=net.M;                % Number of layers of the NN
 
-%Vordefinitionen
-b=cell(M,1);                %Biasvektoren    
-IW=cell(1,1,max(dI{1,1}));  %Eingangsgewichtsmatrizen
-LW=cell(M,M,net.dmax);      %Verbindungsgewichtsmatrizen
+% Predefinitions
+b=cell(M,1);                % Bias vectors   
+IW=cell(1,1,max(dI{1,1}));  % Input weight matrices
+LW=cell(M,M,net.dmax);     % Connection weight matrices
 
-for m=1:M  %Alle Schichten m
+for m=1:M  % All layers m
       
-    %Eingangsgewichte
+    %Input weights
     if m==1
-        for i=I{m}  %Alle Eingänge i in Schicht m
-            for d=dI{m,i}   % alle Verzögerungen i->m
-                w_i=inputs*layers(m);  % Anzahl von Gewichten der Eingangsmatrix IW{m,i,d+1} (Matrix von Eingang i zu Schicht m für Verzögerung d)
-                vec=w_temp(1:w_i);  % Elemente aus Gesamtgewichtsvektor auslesen
-                w_temp=w_temp(w_i+1:end);   %Elemente aus temporären Gesamtgewichtsvektor entfernen
-                IW{m,i,d+1}=reshape(vec,layers(m),[]);%Ausgelesenen Elemente von Vektor vec in Matrix umwamndeln
+        for i=I{m}  % All inputs i in layer m
+            for d=dI{m,i}   % all delays i-> m
+                w_i=inputs*layers(m);  % Number of weights of the input matrix IW {m, i, d + 1} (matrix of input i to layer m for delay d)
+                vec=w_temp(1:w_i);  % Read elements from total weight vector
+                w_temp=w_temp(w_i+1:end);   %Remove elements from temporary total weight vector
+                IW{m,i,d+1}=reshape(vec,layers(m),[]);%Migrate Read Elements from Vector vec to Matrix
             end
         end
     end
 
-    %Verbindungsgewichte
-    for l=L_f{m}  %Alle Eingänge i
-        for d=dL{m,l}   % alle Verzögerungen i->m
-            w_i=layers(l)*layers(m);  % Anzahl von Gewichten der Verbindungssmatrix LW{m,l,d+1} (Matrix von Schicht l zu Schicht m für Verzögerung d)
-            vec=w_temp(1:w_i);  % Elemente aus Gesamtgewichtsvektor auslesen
-            w_temp=w_temp(w_i+1:end);   %Elemente aus temporären Gesamtgewichtsvektor entfernen
-            LW{m,l,d+1}= reshape(vec,layers(m),[]);%Ausgelesenen Elemente von Vektor vec in Matrix umwamndeln
+    %Connection weights
+    for l=L_f{m}  % All inputs i
+        for d=dL{m,l}   %  all delays i-> m
+            w_i=layers(l)*layers(m); % Number of weights of the input matrix IW {m, i, d + 1} (matrix of input i to layer m for delay d)
+            vec=w_temp(1:w_i);  % Read elements from total weight vector
+            w_temp=w_temp(w_i+1:end);   %Remove elements from temporary total weight vector
+            LW{m,l,d+1}= reshape(vec,layers(m),[]);%Migrate Read Elements from Vector vec to Matrix
         end
     end
     
-    %Biasgewichte
-    w_i=layers(m); % Anzahl von Gewichten des Biasvektors der Schicht m
-    b{m}=w_temp(1:w_i); % Elemente aus Gesamtgewichtsvektor auslesen
-    w_temp=w_temp(w_i+1:end);  %Elemente aus temporären Gesamtgewichtsvektor entfernen
+    %Bias weights
+    w_i=layers(m); % Number of weights of the bias vector of the layer m
+    b{m}=w_temp(1:w_i); % ead% elements from total weight vector
+    w_temp=w_temp(w_i+1:end);  %Remove elements from temporary total weight vector
 end
